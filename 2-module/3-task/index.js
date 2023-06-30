@@ -1,7 +1,7 @@
 let calculator = {
-  read() {
-    this.a = Number(prompt('Введите число а'));
-    this.b = Number(prompt('Введите число b'));
+  read(a, b) {
+    this.a = a;
+    this.b = b;
   },
 
   sum() {
