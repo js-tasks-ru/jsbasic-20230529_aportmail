@@ -1,16 +1,12 @@
-let result = {};
-
 function getMinMax(str) {
+  let result = {};
   let splitStr = str.split(' ');
-  let onlyNumber = splitStr.map(item => Number(item)).filter(item => item);
+  let onlyNumber = splitStr
+    .filter(value => isFinite(value))
+    .map(value => +value);
 
   result.min = Math.min.apply(null, onlyNumber);
   result.max = Math.max.apply(null, onlyNumber);
 
   return result;
 }
-
-// let inputData = '1 и -5.8 или 10 хотя 34 + -5.3 и 73';
-// let inputData = '25 : -1 / -234 - 4 = 1000';
-
-// console.log(getMinMax(inputData)); // { min: -5.8, max: 73  }
