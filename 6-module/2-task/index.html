@@ -24,7 +24,13 @@
     });
 
     // console.log(card.elem);
-    holder.append(card.render());
+    holder.append(card.elem);
+    let btn = document.querySelector('.card__button');
+    card.elem.addEventListener('product-add', event => {
+      console.log(event.detail);
+
+    });
+
   </script>
 </body>
 
