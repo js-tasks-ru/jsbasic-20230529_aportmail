@@ -2,17 +2,17 @@ import createElement from '../../assets/lib/create-element.js';
 
 export default class RibbonMenu {
   constructor(categories) {
-this.elem;
 
     this.categories = categories;
     this.render();
+    this.addEventListeners();
   }
 
   render() {
     this.elem = createElement(`
         <div class="ribbon">
 
-        <button class="ribbon__arrow ribbon__arrow_left ribbon__arrow_visible">
+        <button class="ribbon__arrow ribbon__arrow_left ">
           <img src="/assets/images/icons/angle-icon.svg" alt="icon">
         </button>
 
@@ -23,55 +23,77 @@ this.elem;
       ) +
 
       `</nav>
-        <button class="ribbon__arrow ribbon__arrow_right">
+        <button class="ribbon__arrow ribbon__arrow_right ribbon__arrow_visible">
           <img src="/assets/images/icons/angle-icon.svg" alt="icon">
         </button>
       </div>
     `)
     this.elem.querySelector('.ribbon__item').classList.add('ribbon__item_active');
-
-    this.slider();
-    this.elem.querySelector('.ribbon__inner').addEventListener('scroll', this.hideVisible() );
-
   }
 
-  slider() {
-    this.elem.onclick = ({ target }) => {
+  addEventListeners() {
+    this.elem.querySelector('.ribbon__arrow_right').onclick = (event) => this.arrRightClick(event);
+    this.elem.querySelector('.ribbon__arrow_left').onclick = (event) => this.arrLeftClick(event);
 
-      if (target.closest('.ribbon__arrow_right')) {
+    this.elem.querySelector('.ribbon__inner').onscroll = (event) => this.onScroll(event);
 
-        this.elem.querySelector('.ribbon__inner').scrollBy(-350, 0);
-        // this.hideVisible();
-      };
-
-      if (target.closest('.ribbon__arrow_left')) {
-        this.elem.querySelector('.ribbon__inner').scrollBy(350, 0);
-        // this.hideVisible();
-      };
+    this.elem.onclick = (event) => {
+      let item = event.target.closest('.ribbon__item');
+      if (item) {
+        event.preventDefault();
+        this.itemClick(item);
+      }
     }
+  }
 
+  itemClick(item) {
+    this.elem.querySelector('.ribbon__item_active').classList.remove('ribbon__item_active');
+    item.classList.add('ribbon__item_active');
 
+    this.elem.dispatchEvent(
+      new CustomEvent('ribbon-select', {
+        detail: item.dataset.id,
+        bubbles: true,
+      })
+    )
+  }
+
+  arrRightClick() {
+    this.elem.querySelector('.ribbon__inner').scrollBy(350, 0);
+    this.hideVisible();
+  }
+
+  arrLeftClick() {
+    this.elem.querySelector('.ribbon__inner').scrollBy(-350, 0);
+    this.hideVisible();
+  }
+
+  onScroll() {
+    this.hideVisible()
+  }
+
+  scrollLeft() {
+    return this.elem.querySelector('.ribbon__inner').scrollLeft;
+  }
+
+  scrollRight() {
+    return this.elem.querySelector('.ribbon__inner').scrollWidth
+      - this.scrollLeft()
+      - this.elem.querySelector('.ribbon__inner').clientWidth;
   }
 
   hideVisible() {
-    let ribbonInner = this.elem.querySelector('.ribbon__inner');
-    let arrLeft = this.elem.querySelector('.ribbon__arrow_left');
-    let arrRight = this.elem.querySelector('.ribbon__arrow_right');
-    let scrollWidth = ribbonInner.scrollWidth;
-    let clientWidth = ribbonInner.clientWidth;
-    let scrollLeft = ribbonInner.scrollLeft;
-    let scrollRight = scrollWidth - scrollLeft - clientWidth;
-
-    if (scrollRight == 0) {
-      arrRight.classList.remove('.ribbon__arrow_visible')
+    if (this.scrollLeft() > 0) {
+      this.elem.querySelector('.ribbon__arrow_left').classList.add('ribbon__arrow_visible');
+    } else {
+      this.elem.querySelector('.ribbon__arrow_left').classList.remove('ribbon__arrow_visible');
     }
 
-    if (scrollLeft == 0) {
-      arrLeft.classList.remove('.ribbon__arrow_visible')
+    if (this.scrollRight() > 1) {
+      this.elem.querySelector('.ribbon__arrow_right').classList.add('ribbon__arrow_visible');
+    } else {
+      this.elem.querySelector('.ribbon__arrow_right').classList.remove('ribbon__arrow_visible');
     }
-
-
-    // let scrollLeft = this.elem.querySelector('.ribbon__inner').scrollLeft;
-    console.log(scrollLeft);
   }
 }
+
