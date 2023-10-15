@@ -3,6 +3,7 @@ import createElement from '../../assets/lib/create-element.js';
 export default class Modal {
   constructor() {
     this.render();
+    this.addEventListeners();
   }
 
   render() {
@@ -33,14 +34,33 @@ export default class Modal {
   }
 
   open() {
+    document.body.append(this.elem);
+    document.body.classList.add('is-modal-open');
+  }
+
+  setTitle(title) {
+    this.elem.querySelector('.modal__title').innerHTML = title;
+  }
+
+  setBody(modalBodyElem) {
+    let modalBody = this.elem.querySelector('.modal__body');
+    modalBody.innerHTML = '';
+    modalBody.insertAdjacentElement('beforeend', modalBodyElem)
 
   }
 
-  setTitle() {
-
+  close() {
+    document.body.classList.remove('is-modal-open');
+    this.elem.remove();
+    document.onkeydown = null;
   }
 
-  setBody() {
-
+  addEventListeners() {
+    this.elem.querySelector('.modal__close').onclick = (event) => this.close(event);
+    document.onkeydown = (event) => {
+      if (event.code === 'Escape') {
+        this.close(event);
+      }
+    };
   }
 }
